@@ -17,6 +17,7 @@ switch ($form->state()) {
             $form->setState(FormState::UPDATE);
             $token = encryptToken($username, $password);
         } else {
+            unauthorizedResponse();
             $form->setMessage('Login failed!');
         }
         break;
@@ -24,14 +25,17 @@ switch ($form->state()) {
         list($username, $password, $timestamp) = decryptToken($token);
 
         if ($timestamp < time() - 300) {
+            unauthorizedResponse();
             $form->setState(FormState::FAILURE);
             $form->setMessage('Session expired.');
         } elseif ($new_password !== $confirm_password) {
+            http_response_code(400);
             $form->setMessage('Passwords do not match!');
         } elseif (changePassword($username, $password, $new_password)) {
             $form->setState(FormState::SUCCESS);
             $form->setMessage('Password successfully updated.');
         } else {
+          http_response_code(422);
           $form->setMessage('Could not change password!');
         }
 }

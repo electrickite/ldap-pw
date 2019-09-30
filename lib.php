@@ -93,6 +93,11 @@ function decryptToken($token) {
     return [null, null, 0];
 }
 
+function unauthorizedResponse() {
+    http_response_code(401);
+    header('WWW-Authenticate: Form location="'.$_SERVER['REQUEST_URI'].'"');
+}
+
 function authenticate($username, $password) {
     $link = bind($username, $password);
     if ($link === false) {
