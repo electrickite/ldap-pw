@@ -163,14 +163,14 @@ function loadConfig() {
     }
 
     $parsedUri = parse_url(LDAP_URL);
-    if ($parsedUri === false) {
+    if ($parsedUri === false || !isset($parsedUri['host'])) {
         print_debug('Could not parse LDAP server URL');
         return false;
     }
     $conf['host'] = $parsedUri['host'];
-    $conf['scheme'] = $parsedUri['scheme'];
+    $conf['scheme'] = isset($parsedUri['scheme']) ? $parsedUri['scheme'] : 'ldap';
 
-    if (is_int($parsedUri['port'])) {
+    if (isset($parsedUri['port']) && is_int($parsedUri['port'])) {
         $conf['port'] = $parsedUri['port'];
     } else {
         $conf['port'] = ($conf['scheme'] === 'ldaps') ? 636 : 389;
